@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chaptr 1 — Coffeehouse &amp; Kitchen, Janakpur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,440;0,9..144,560;1,9..144,440&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2b241d;
+    --ink-soft:#6b6055;
+    --marble-a:#f6f3ee;
+    --marble-b:#efeae2;
+    --line: rgba(43,36,29,0.12);
+    --rust:#c4622d;
+    --rust-deep:#a34e21;
+    --olive:#5c6b47;
+    --paper:#fffdfa;
+    --shadow: 0 40px 80px -40px rgba(43,36,29,0.28);
+    --ease: cubic-bezier(.22,.61,.36,1);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+
+  body{
+    font-family:'Karla', sans-serif;
+    color:var(--ink);
+    line-height:1.6;
+    overflow-x:hidden;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(0,0,0,0.02), transparent 40%),
+      radial-gradient(ellipse at 80% 90%, rgba(0,0,0,0.025), transparent 45%),
+      linear-gradient(180deg, var(--marble-a), var(--marble-b));
+    background-attachment:fixed;
+    position:relative;
+  }
+
+  /* subtle marble veining, drawn once, tiled */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    z-index:0;
+    pointer-events:none;
+    opacity:0.5;
+    background-image:
+      linear-gradient(115deg, transparent 40%, rgba(43,36,29,0.025) 41%, transparent 43%),
+      linear-gradient(70deg, transparent 60%, rgba(43,36,29,0.02) 61%, transparent 63%),
+      linear-gradient(20deg, transparent 25%, rgba(43,36,29,0.018) 26%, transparent 28%);
+    background-size:900px 900px, 700px 700px, 1100px 1100px;
+  }
+
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:440;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+  a{ color:inherit; text-decoration:none; }
+  img{ display:block; max-width:100%; }
+  ::selection{ background:var(--rust); color:var(--paper); }
+  :focus-visible{ outline:2px solid var(--rust); outline-offset:3px; }
+
+  .container{ max-width:1180px; margin:0 auto; padding:0 40px; position:relative; z-index:1; }
+  @media (max-width:600px){ .container{ padding:0 22px; } }
+
+  .progress-rule{
+    position:fixed; top:0; left:0; height:2px;
+    background:var(--rust);
+    z-index:600; width:0%;
+    transition:width 0.1s linear;
+  }
+
+  /* ---------- Floating props (decorative, absolute-positioned) ---------- */
+  .prop{
+    position:absolute;
+    pointer-events:none;
+    z-index:0;
+    filter:drop-shadow(0 14px 20px rgba(43,36,29,0.16));
+    transition:transform 0.6s var(--ease);
+  }
+  .prop img{ width:100%; height:100%; object-fit:contain; }
+
+  /* ---------- Nav ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:400;
+    padding:28px 0;
+    transition:padding 0.4s var(--ease), background 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  }
+  header.scrolled{
+    padding:16px 0;
+    background:rgba(255,253,250,0.85);
+    backdrop-filter:blur(12px);
+    box-shadow:0 1px 0 var(--line);
+  }
+  nav{ display:flex; align-items:center; justify-content:space-between; }
+  .brand{
+    font-family:'Fraunces', serif; font-size:1.2rem; font-weight:500;
+    display:flex; align-items:baseline; gap:8px;
+  }
+  .brand .mark{ font-size:0.6em; color:var(--rust); font-style:italic; }
+  .nav-links{ display:flex; gap:40px; font-size:0.92rem; color:var(--ink-soft); }
+  .nav-links a{ position:relative; padding-bottom:4px; }
+  .nav-links a::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:1px;
+    background:var(--rust); transform:scaleX(0); transform-origin:right;
+    transition:transform 0.35s var(--ease);
+  }
+  .nav-links a:hover::after{ transform:scaleX(1); transform-origin:left; }
+  .nav-cta{
+    background:var(--rust); color:var(--paper);
+    padding:11px 24px; font-size:0.85rem; border-radius:30px;
+    transition:background 0.3s var(--ease), transform 0.3s var(--ease);
+  }
+  .nav-cta:hover{ background:var(--rust-deep); transform:translateY(-1px); }
+
+  .nav-toggle{
+    display:none;
+    flex-direction:column;
+    justify-content:center;
+    gap:5px;
+    width:34px; height:34px;
+    background:none; border:none; cursor:pointer;
+    padding:0;
+  }
+  .nav-toggle span{
+    display:block; width:100%; height:2px;
+    background:var(--ink);
+    border-radius:2px;
+    transition:transform 0.35s var(--ease), opacity 0.25s var(--ease);
+  }
+  .nav-toggle.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+  .nav-toggle.open span:nth-child(2){ opacity:0; }
+  .nav-toggle.open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+
+  .mobile-menu{
+    display:none;
+    flex-direction:column;
+    background:rgba(255,253,250,0.98);
+    backdrop-filter:blur(12px);
+    box-shadow:0 1px 0 var(--line);
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.4s var(--ease);
+  }
+  .mobile-menu.open{ max-height:400px; }
+  .mobile-menu a{
+    padding:16px 40px;
+    font-size:1rem;
+    border-bottom:1px solid var(--line);
+    color:var(--ink-soft);
+  }
+  .mobile-menu-cta{
+    color:var(--rust) !important;
+    font-weight:600;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    text-align:center;
+    padding:140px 0 60px;
+  }
+  @media (max-width:600px){
+    .hero{ padding:120px 0 50px; min-height:auto; }
+  }
+  .hero-eyebrow{
+    font-family:'Fraunces', serif; font-style:italic;
+    color:var(--rust); font-size:1rem; margin-bottom:20px;
+    opacity:0; animation:riseIn 1s var(--ease) 0.2s forwards;
+  }
+  .hero h1{
+    font-size:clamp(2.8rem, 6.2vw, 5rem);
+    line-height:1.06;
+    max-width:15ch;
+    opacity:0; animation:riseIn 1.1s var(--ease) 0.4s forwards;
+  }
+  .hero-sub{
+    max-width:440px; margin:24px auto 0;
+    color:var(--ink-soft); font-size:1.02rem;
+    opacity:0; animation:riseIn 1s var(--ease) 0.65s forwards;
+  }
+  .hero-tabs{
+    display:flex; gap:34px; margin-top:40px;
+    font-size:0.88rem; color:var(--ink-soft);
+    opacity:0; animation:riseIn 1s var(--ease) 0.85s forwards;
+  }
+  .hero-tabs span{
+    position:relative; padding-bottom:8px; cursor:default;
+  }
+  .hero-tabs span.active{ color:var(--ink); }
+  .hero-tabs span.active::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:2px;
+    background:var(--rust);
+  }
+  @keyframes riseIn{ from{ opacity:0; transform:translateY(20px);} to{ opacity:1; transform:translateY(0);} }
+
+  .hero-plates{
+    position:relative;
+    width:100%;
+    max-width:980px;
+    margin:64px auto 0;
+    display:flex;
+    justify-content:center;
+    gap:56px;
+    opacity:0; animation:riseIn 1.1s var(--ease) 1.05s forwards;
+  }
+  .plate{
+    width:230px; height:230px;
+    border-radius:50%;
+    overflow:hidden;
+    box-shadow:0 30px 50px -20px rgba(43,36,29,0.35), 0 0 0 6px #fff;
+    transition:transform 0.6s var(--ease);
+  }
+  .plate:hover{ transform:translateY(-10px) scale(1.03); }
+  .plate img{ width:100%; height:100%; object-fit:cover; }
+  .plate.mid{ width:270px; height:270px; margin-top:-24px; }
+  .plate-caption{
+    text-align:center; margin-top:18px;
+    font-family:'Fraunces', serif; font-size:1.05rem;
+  }
+  .plate-desc{
+    text-align:center; font-size:0.82rem; color:var(--ink-soft);
+    max-width:26ch; margin:6px auto 0;
+  }
+  .plates-row{ display:flex; gap:56px; }
+  .plate-col{ display:flex; flex-direction:column; align-items:center; }
+
+  @media (max-width:900px){
+    .hero-plates{ flex-wrap:wrap; gap:36px; }
+    .plate{ width:150px; height:150px; }
+    .plate.mid{ width:170px; height:170px; margin-top:0; }
+  }
+  @media (max-width:600px){
+    .hero-tabs{ gap:18px; flex-wrap:wrap; row-gap:10px; padding:0 10px; }
+    .hero-tabs span{ font-size:0.8rem; }
+    .hero-plates{ gap:24px; margin-top:44px; }
+    .plate{ width:118px; height:118px; }
+    .plate.mid{ width:132px; height:132px; }
+    .plate-caption{ font-size:0.92rem; margin-top:12px; }
+    .plate-desc{ font-size:0.74rem; max-width:20ch; }
+    .prop{ display:none; }
+  }
+
+  /* ---------- Section scaffolding ---------- */
+  section{ position:relative; }
+  .section-pad{ padding:140px 0; }
+  @media (max-width:860px){ .section-pad{ padding:90px 0; } }
+
+  .kicker{
+    font-family:'Fraunces', serif; font-style:italic;
+    color:var(--rust); font-size:1rem; margin-bottom:16px;
+  }
+  .section-head{ text-align:center; max-width:560px; margin:0 auto; }
+  .section-head h2{ font-size:clamp(2.1rem, 4.2vw, 3rem); line-height:1.08; }
+  .section-head p{ color:var(--ink-soft); margin-top:14px; font-size:1.02rem; }
+
+  .reveal{
+    opacity:0; transform:translateY(32px);
+    transition:opacity 0.9s var(--ease), transform 0.9s var(--ease);
+  }
+  .reveal.is-visible{ opacity:1; transform:translateY(0); }
+  .reveal-delay-1{ transition-delay:0.1s; }
+  .reveal-delay-2{ transition-delay:0.2s; }
+  .reveal-delay-3{ transition-delay:0.3s; }
+
+  /* ---------- Menu (What's on our Plate) ---------- */
+  .menu{ padding-top:110px; }
+  .chapter-tabs{
+    display:flex; justify-content:center; gap:36px;
+    margin:34px 0 70px;
+    font-size:0.92rem; color:var(--ink-soft);
+  }
+  .chapter-tab{
+    position:relative; padding-bottom:8px; cursor:pointer;
+    background:none; border:none; font-family:'Karla',sans-serif; font-size:0.92rem; color:var(--ink-soft);
+    transition:color 0.3s var(--ease);
+  }
+  .chapter-tab.active{ color:var(--ink); }
+  .chapter-tab.active::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:2px; background:var(--rust);
+  }
+
+  .menu-panel{ display:none; }
+  .menu-panel.active{ display:block; animation:fadeUp 0.55s var(--ease); }
+  @keyframes fadeUp{ from{ opacity:0; transform:translateY(16px);} to{opacity:1; transform:translateY(0);} }
+
+  .dish-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:60px 40px;
+  }
+  .dish{ text-align:center; }
+  .dish-plate{
+    width:100%; aspect-ratio:1/1;
+    border-radius:50%;
+    overflow:hidden;
+    box-shadow:0 26px 40px -20px rgba(43,36,29,0.3), 0 0 0 6px #fff;
+    margin-bottom:22px;
+    transition:transform 0.6s var(--ease);
+  }
+  .dish:hover .dish-plate{ transform:translateY(-8px); }
+  .dish-plate img{ width:100%; height:100%; object-fit:cover; }
+  .dish h3{ font-size:1.15rem; }
+  .dish p{ color:var(--ink-soft); font-size:0.86rem; margin-top:8px; max-width:32ch; margin-left:auto; margin-right:auto; }
+  .dish .price{ font-family:'Fraunces', serif; font-style:italic; color:var(--rust); margin-top:10px; font-size:0.95rem; }
+
+  @media (max-width:860px){
+    .dish-grid{ grid-template-columns:1fr; gap:50px; max-width:320px; margin:0 auto; }
+    .chapter-tabs{
+      justify-content:flex-start;
+      gap:26px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      padding:0 22px 6px;
+      margin:28px -22px 56px;
+      scrollbar-width:none;
+    }
+    .chapter-tabs::-webkit-scrollbar{ display:none; }
+    .chapter-tab{ white-space:nowrap; flex-shrink:0; }
+  }
+
+  /* ---------- Delivery ---------- */
+  .delivery{ background:rgba(255,253,250,0.5); }
+  .delivery-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:70px;
+    align-items:center;
+  }
+  .delivery-copy .kicker{ margin-bottom:16px; }
+  .delivery-copy h2{ font-size:clamp(2rem, 4vw, 2.8rem); line-height:1.1; }
+  .delivery-copy p{ color:var(--ink-soft); margin-top:16px; max-width:44ch; font-size:1rem; }
+  .delivery-badge{
+    display:inline-flex; align-items:center; gap:8px;
+    margin-top:20px;
+    font-size:0.8rem;
+    color:var(--olive);
+    background:rgba(92,107,71,0.1);
+    border:1px solid rgba(92,107,71,0.25);
+    padding:7px 16px;
+    border-radius:20px;
+  }
+  .delivery-badge .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--olive);
+    flex-shrink:0;
+  }
+  .delivery-apps{
+    display:flex; flex-direction:column; gap:14px;
+    margin-top:34px;
+  }
+  .delivery-app-row{
+    display:flex; align-items:center; gap:16px;
+    background:var(--paper);
+    border-radius:16px;
+    padding:16px 20px;
+    box-shadow:0 16px 32px -22px rgba(43,36,29,0.25);
+    transition:transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+  }
+  .delivery-app-row:hover{ transform:translateY(-2px); box-shadow:0 20px 36px -20px rgba(43,36,29,0.3); }
+  .delivery-app-icon{
+    width:46px; height:46px; border-radius:12px;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-weight:600; font-size:1.1rem;
+    color:#fff;
+  }
+  .delivery-app-info{ flex:1; }
+  .delivery-app-name{ font-family:'Fraunces', serif; font-size:1.02rem; }
+  .delivery-app-meta{ font-size:0.78rem; color:var(--ink-soft); margin-top:2px; }
+  .delivery-app-cta{
+    font-size:0.84rem;
+    color:var(--rust);
+    white-space:nowrap;
+    padding:8px 16px;
+    border:1px solid rgba(196,98,45,0.3);
+    border-radius:20px;
+    transition:background 0.3s var(--ease), color 0.3s var(--ease);
+  }
+  .delivery-app-cta:hover{ background:var(--rust); color:#fff; }
+
+  .delivery-visual{
+    position:relative;
+  }
+  .delivery-visual .frame{
+    border-radius:24px;
+    overflow:hidden;
+    aspect-ratio:4/5;
+    box-shadow:var(--shadow);
+  }
+  .delivery-visual .frame img{ width:100%; height:100%; object-fit:cover; }
+  .delivery-float{
+    position:absolute;
+    bottom:-28px; left:-36px;
+    background:var(--paper);
+    border-radius:16px;
+    padding:16px 22px;
+    box-shadow:var(--shadow);
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .delivery-float .clock{
+    width:36px; height:36px; border-radius:50%;
+    background:rgba(196,98,45,0.12);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--rust); flex-shrink:0;
+  }
+  .delivery-float .clock svg{ width:18px; height:18px; }
+  .delivery-float .label{ font-size:0.72rem; color:var(--ink-soft); }
+  .delivery-float .value{ font-family:'Fraunces', serif; font-size:1rem; }
+
+  @media (max-width:900px){
+    .delivery-grid{ grid-template-columns:1fr; gap:56px; }
+    .delivery-visual{ order:-1; max-width:340px; margin:0 auto; }
+    .delivery-float{ left:16px; bottom:-22px; padding:12px 18px; }
+  }
+  @media (max-width:520px){
+    .delivery-app-row{ flex-wrap:wrap; padding:14px 16px; }
+    .delivery-app-cta{ width:100%; text-align:center; }
+  }
+
+  /* ---------- Ambience ---------- */
+  .ambience{ background:rgba(255,253,250,0.5); }
+  .amb-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:24px;
+    margin-top:64px;
+  }
+  .amb-card{
+    border-radius:20px;
+    overflow:hidden;
+    position:relative;
+    aspect-ratio:3/4;
+    box-shadow:var(--shadow);
+  }
+  .amb-card:nth-child(2), .amb-card:nth-child(3){ aspect-ratio:3/4.6; margin-top:-40px; }
+  .amb-card img{ width:100%; height:100%; object-fit:cover; transition:transform 1.2s var(--ease); }
+  .amb-card:hover img{ transform:scale(1.06); }
+  .amb-card figcaption{
+    position:absolute; left:0; right:0; bottom:0;
+    padding:20px; color:#fff; font-size:0.85rem;
+    background:linear-gradient(0deg, rgba(0,0,0,0.55), transparent);
+  }
+  @media (max-width:900px){
+    .amb-grid{ grid-template-columns:repeat(2,1fr); }
+    .amb-card:nth-child(2), .amb-card:nth-child(3){ margin-top:0; }
+  }
+  @media (max-width:520px){
+    .amb-grid{ grid-template-columns:1fr; gap:20px; }
+    .amb-card{ aspect-ratio:4/3; }
+  }
+
+  /* ---------- Testimonials ---------- */
+  .testimonials{ position:relative; }
+  .test-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:70px;
+    align-items:center;
+  }
+  .test-image{
+    border-radius:50%;
+    overflow:hidden;
+    aspect-ratio:1/1;
+    box-shadow:0 30px 60px -20px rgba(43,36,29,0.35), 0 0 0 8px #fff;
+    max-width:420px;
+  }
+  .test-image img{ width:100%; height:100%; object-fit:cover; }
+  .test-quote{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:1.3rem;
+    line-height:1.5;
+    color:var(--ink);
+    margin-top:26px;
+  }
+  .test-avatars{
+    display:flex; gap:-8px; margin-top:30px;
+  }
+  .test-avatars img{
+    width:46px; height:46px; border-radius:50%; object-fit:cover;
+    border:3px solid var(--paper);
+    margin-left:-12px;
+  }
+  .test-avatars img:first-child{ margin-left:0; }
+  .test-name{ margin-top:16px; font-size:0.9rem; color:var(--ink-soft); }
+  @media (max-width:520px){
+    .test-quote{ font-size:1.1rem; }
+    .test-avatars{ justify-content:center; }
+  }
+  .test-name strong{ color:var(--ink); }
+  @media (max-width:900px){
+    .test-grid{ grid-template-columns:1fr; gap:40px; text-align:center; }
+    .test-image{ margin:0 auto; max-width:280px; }
+  }
+
+  /* ---------- Google Reviews marquee ---------- */
+  .reviews{ background:rgba(255,253,250,0.5); overflow:hidden; }
+  .reviews-head{
+    display:flex; align-items:center; justify-content:center;
+    gap:12px; margin-bottom:8px;
+  }
+  .google-g{
+    width:22px; height:22px; flex-shrink:0;
+  }
+  .reviews-sub{
+    display:flex; align-items:center; justify-content:center;
+    gap:10px; margin-top:14px; color:var(--ink-soft); font-size:0.92rem;
+  }
+  .stars{ color:#e8a33d; letter-spacing:2px; font-size:1rem; }
+  .demo-tag{
+    display:inline-block;
+    margin-top:18px;
+    font-size:0.74rem;
+    color:var(--ink-soft);
+    background:rgba(43,36,29,0.06);
+    border:1px solid var(--line);
+    padding:6px 14px;
+    border-radius:20px;
+  }
+
+  .marquee-wrap{
+    margin-top:56px;
+    position:relative;
+    -webkit-mask-image:linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image:linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .marquee-track{
+    display:flex;
+    gap:24px;
+    width:max-content;
+    animation:scrollLeft 42s linear infinite;
+  }
+  .marquee-wrap:hover .marquee-track{ animation-play-state:paused; }
+  @keyframes scrollLeft{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-50%); }
+  }
+  .review-card{
+    width:320px;
+    flex-shrink:0;
+    background:var(--paper);
+    border-radius:16px;
+    padding:26px 26px 22px;
+    box-shadow:0 20px 40px -24px rgba(43,36,29,0.25);
+  }
+  .review-top{
+    display:flex; align-items:center; gap:12px;
+  }
+  .review-avatar{
+    width:42px; height:42px; border-radius:50%; object-fit:cover;
+    flex-shrink:0;
+  }
+  .review-name{ font-size:0.92rem; font-weight:600; color:var(--ink); }
+  .review-when{ font-size:0.76rem; color:var(--ink-soft); margin-top:1px; }
+  .review-stars{ color:#e8a33d; font-size:0.85rem; margin:12px 0 10px; letter-spacing:1px; }
+  @media (max-width:600px){
+    .review-card{ width:260px; padding:20px 20px 18px; }
+    .reviews-sub{ flex-wrap:wrap; text-align:center; }
+    .marquee-wrap{ margin-top:40px; }
+  }
+  .review-text{ font-size:0.88rem; color:var(--ink-soft); line-height:1.55; }
+
+  /* ---------- Newsletter / Visit ---------- */
+  .visit{ text-align:center; }
+  .visit-form{
+    display:flex; gap:10px; max-width:520px; margin:36px auto 0;
+    background:var(--paper);
+    border-radius:40px;
+    padding:6px;
+    box-shadow:var(--shadow);
+  }
+  .visit-form input{
+    flex:1; border:none; background:none; padding:14px 22px;
+    font-family:'Karla', sans-serif; font-size:0.92rem; color:var(--ink);
+  }
+  .visit-form input:focus{ outline:none; }
+  .visit-form button{
+    background:var(--rust); color:#fff; border:none;
+    padding:14px 30px; border-radius:40px; font-size:0.9rem;
+    cursor:pointer; transition:background 0.3s var(--ease), transform 0.3s var(--ease);
+  }
+  .visit-form button:hover{ background:var(--rust-deep); transform:translateY(-1px); }
+  @media (max-width:520px){
+    .visit-form{
+      flex-direction:column;
+      border-radius:20px;
+      padding:10px;
+      gap:8px;
+    }
+    .visit-form input{ padding:12px 16px; text-align:center; }
+    .visit-form button{ width:100%; padding:13px; border-radius:14px; }
+  }
+
+  .visit-details{
+    display:flex; justify-content:center; gap:60px;
+    margin-top:56px; flex-wrap:wrap;
+  }
+  .vd{ text-align:center; }
+  .vd-label{ font-size:0.78rem; color:var(--ink-soft); margin-bottom:6px; }
+  .vd-value{ font-family:'Fraunces', serif; font-size:1.1rem; }
+
+  /* ---------- Map ---------- */
+  .map-block{
+    margin-top:80px;
+    display:grid;
+    grid-template-columns:1.1fr 1fr;
+    gap:0;
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+    background:var(--paper);
+    text-align:left;
+  }
+  .map-embed{
+    position:relative;
+    min-height:420px;
+    background:var(--marble-b);
+  }
+  .map-embed iframe{
+    width:100%; height:100%; min-height:420px;
+    border:0; display:block;
+  }
+  .map-info{
+    padding:48px 44px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  .map-info .kicker{ margin-bottom:10px; }
+  .map-info h3{ font-size:1.6rem; margin-bottom:18px; }
+  .map-row{
+    display:flex; gap:16px;
+    padding:16px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .map-row:last-of-type{ border-bottom:none; }
+  .map-row .icon{
+    width:20px; height:20px; flex-shrink:0; margin-top:2px; color:var(--rust);
+  }
+  .map-row .label{ font-size:0.78rem; color:var(--ink-soft); }
+  .map-row .value{ font-family:'Fraunces', serif; font-size:1.02rem; margin-top:2px; }
+  .map-cta{
+    display:inline-flex; align-items:center; gap:8px;
+    margin-top:24px;
+    background:var(--rust); color:#fff;
+    padding:14px 26px; border-radius:30px;
+    font-size:0.9rem; width:fit-content;
+    transition:background 0.3s var(--ease), transform 0.3s var(--ease);
+  }
+  .map-cta:hover{ background:var(--rust-deep); transform:translateY(-1px); }
+
+  @media (max-width:900px){
+    .map-block{ grid-template-columns:1fr; }
+    .map-info{ padding:34px 28px; text-align:center; }
+    .map-row{ justify-content:center; }
+    .map-embed, .map-embed iframe{ min-height:280px; }
+    .map-block{ margin-top:56px; border-radius:18px; }
+  }
+
+  /* ---------- Footer ---------- */
+  footer{
+    padding:80px 0 40px;
+    position:relative;
+  }
+  .footer-grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr 1fr 1fr;
+    gap:40px;
+    padding-bottom:50px;
+    border-bottom:1px solid var(--line);
+  }
+  .footer-brand .brand{ font-size:1.4rem; }
+  .footer-brand p{ color:var(--ink-soft); margin-top:14px; font-size:0.9rem; max-width:28ch; }
+  .footer-col h4{
+    font-size:0.78rem; text-transform:none; color:var(--ink);
+    margin-bottom:16px; font-weight:600;
+  }
+  .footer-col a{
+    display:block; font-size:0.9rem; color:var(--ink-soft);
+    margin-bottom:10px; transition:color 0.3s var(--ease);
+  }
+  .footer-col a:hover{ color:var(--rust); }
+  .footer-bottom{
+    display:flex; justify-content:space-between;
+    padding-top:28px; font-size:0.8rem; color:var(--ink-soft);
+    flex-wrap:wrap; gap:12px;
+  }
+  @media (max-width:860px){
+    .footer-grid{ grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width:600px){
+    .footer-grid{ grid-template-columns:1fr; }
+  }
+  @media (max-width:760px){
+    .nav-links{ display:none; }
+    .nav-cta{ display:none; }
+    .nav-toggle{ display:flex; }
+    .mobile-menu{ display:flex; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-rule" id="progressRule"></div>
+
+<header id="siteHeader">
+  <div class="container">
+    <nav>
+      <a href="#top" class="brand">Chaptr <span class="mark">1</span></a>
+      <div class="nav-links">
+        <a href="#menu">The Menu</a>
+        <a href="#delivery">Delivery</a>
+        <a href="#ambience">Ambience</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#visit">Visit</a>
+      </div>
+      <a href="#visit" class="nav-cta">Reserve a Table</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#menu">The Menu</a>
+    <a href="#delivery">Delivery</a>
+    <a href="#ambience">Ambience</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#visit">Visit</a>
+    <a href="#visit" class="mobile-menu-cta">Reserve a Table</a>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <!-- floating props -->
+  <div class="prop" style="width:90px; top:16%; left:6%; transform:rotate(-12deg);">
+    <img src="https://images.unsplash.com/photo-1508616873439-3a7d38fdb3a1?auto=format&fit=crop&w=300&q=80" alt="" style="border-radius:50%; object-fit:cover; width:100%; height:100%;">
+  </div>
+  <div class="prop" style="width:70px; top:30%; left:2%; transform:rotate(8deg);">
+    <img src="https://images.unsplash.com/photo-1615485500704-8e990f9900f7?auto=format&fit=crop&w=300&q=80" alt="" style="border-radius:50%; object-fit:cover; width:100%; height:100%;">
+  </div>
+  <div class="prop" style="width:100px; top:14%; right:6%; transform:rotate(10deg);">
+    <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=300&q=80" alt="" style="border-radius:50%; object-fit:cover; width:100%; height:100%;">
+  </div>
+  <div class="prop" style="width:60px; top:34%; right:3%; transform:rotate(-14deg);">
+    <img src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=300&q=80" alt="" style="border-radius:50%; object-fit:cover; width:100%; height:100%;">
+  </div>
+
+  <p class="hero-eyebrow container">Janakpur's coffeehouse &amp; kitchen</p>
+  <h1 class="container">What's on our Plate</h1>
+  <p class="hero-sub container">Please serve yourself without any hesitate — a menu built chapter by chapter, plated with care, in the heart of Janakpur.</p>
+
+  <div class="hero-tabs">
+    <span data-hero-tab="coffee" class="active">Coffee &amp; Bakes</span>
+    <span data-hero-tab="plates">Main Plates</span>
+    <span data-hero-tab="sweet">Something Sweet</span>
+  </div>
+
+  <div class="hero-plates">
+    <div class="plates-row" data-hero-panel="coffee">
+      <div class="plate-col">
+        <div class="plate"><img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=80" alt="Pour-over coffee"></div>
+        <div class="plate-caption">Signature Pour-Over</div>
+        <div class="plate-desc">Single-origin, brewed slow, notes of jaggery</div>
+      </div>
+      <div class="plate-col">
+        <div class="plate mid"><img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=500&q=80" alt="Fresh croissant"></div>
+        <div class="plate-caption">Butter Croissant</div>
+        <div class="plate-desc">Laminated fresh each morning</div>
+      </div>
+      <div class="plate-col">
+        <div class="plate"><img src="https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=500&q=80" alt="Cardamom bun"></div>
+        <div class="plate-caption">Cardamom Bun</div>
+        <div class="plate-desc">A Chaptr original, softly spiced</div>
+      </div>
+    </div>
+    <div class="plates-row" data-hero-panel="plates" style="display:none;">
+      <div class="plate-col">
+        <div class="plate"><img src="https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=500&q=80" alt="Grain bowl"></div>
+        <div class="plate-caption">Roasted Veg Bowl</div>
+        <div class="plate-desc">Seasonal vegetables, tahini dressing</div>
+      </div>
+      <div class="plate-col">
+        <div class="plate mid"><img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=500&q=80" alt="Avocado toast"></div>
+        <div class="plate-caption">Avocado on Sourdough</div>
+        <div class="plate-desc">Chilli oil, feta, soft egg</div>
+      </div>
+      <div class="plate-col">
+        <div class="plate"><img src="https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=500&q=80" alt="Momo dumplings"></div>
+        <div class="plate-caption">Momo, Chaptr Style</div>
+        <div class="plate-desc">Steamed, house sesame-chilli sauce</div>
+      </div>
+    </div>
+    <div class="plates-row" data-hero-panel="sweet" style="display:none;">
+      <div class="plate-col">
+        <div class="plate"><img src="https://images.unsplash.com/photo-1524351199678-941a58a3df50?auto=format&fit=crop&w=500&q=80" alt="Cheesecake slice"></div>
+        <div class="plate-caption">Basque Cheesecake</div>
+        <div class="plate-desc">Burnt top, creamy centre</div>
+      </div>
+      <div class="plate-col">
+        <div class="plate mid"><img src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=500&q=80" alt="Chocolate babka"></div>
+        <div class="plate-caption">Dark Chocolate Babka</div>
+        <div class="plate-desc">Rich, swirled, sea-salted</div>
+      </div>
+      <div class="plate-col">
+        <div class="plate"><img src="https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=500&q=80" alt="Affogato"></div>
+        <div class="plate-caption">Affogato</div>
+        <div class="plate-desc">Vanilla gelato, hot espresso</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="menu section-pad" id="menu">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="kicker">The Menu</p>
+      <h2>Chapters, not categories</h2>
+      <p>Each section of our menu is its own small chapter — pick one, or wander through a few.</p>
+    </div>
+
+    <div class="chapter-tabs reveal reveal-delay-1">
+      <button class="chapter-tab active" data-tab="coffee">Coffee</button>
+      <button class="chapter-tab" data-tab="tea">Tea &amp; Infusions</button>
+      <button class="chapter-tab" data-tab="bakes">Fresh Bakes</button>
+      <button class="chapter-tab" data-tab="plates">All-Day Plates</button>
+      <button class="chapter-tab" data-tab="cold">Cold Brews</button>
+    </div>
+
+    <div class="menu-panel active reveal reveal-delay-2" data-panel="coffee">
+      <div class="dish-grid">
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=80" alt="Pour-over coffee"></div>
+          <h3>Signature Pour-Over</h3>
+          <p>Single-origin beans, tasting notes of jaggery and stone fruit</p>
+          <div class="price">Rs 280</div>
+        </div>
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=500&q=80" alt="Cappuccino"></div>
+          <h3>Classic Cappuccino</h3>
+          <p>Double espresso, steamed milk, a whisper of cocoa</p>
+          <div class="price">Rs 220</div>
+        </div>
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=500&q=80" alt="Honey latte"></div>
+          <h3>Himalayan Honey Latte</h3>
+          <p>Local wild honey, espresso, oat milk optional</p>
+          <div class="price">Rs 250</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-panel" data-panel="tea">
+      <div class="dish-grid">
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1597481499750-3e6b22637e12?auto=format&fit=crop&w=500&q=80" alt="Black tea"></div>
+          <h3>Ilam Estate Black Tea</h3>
+          <p>High-altitude Nepali black tea, brewed to order</p>
+          <div class="price">Rs 150</div>
+        </div>
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1571934811356-5cc061b6821f?auto=format&fit=crop&w=500&q=80" alt="Masala chiya"></div>
+          <h3>Masala Chiya, Chaptr Style</h3>
+          <p>Cardamom, ginger, clove, slow-simmered milk</p>
+          <div class="price">Rs 130</div>
+        </div>
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1499638673689-79a0b5115d87?auto=format&fit=crop&w=500&q=80" alt="Chamomile tea"></div>
+          <h3>Chamomile &amp; Honey</h3>
+          <p>Caffeine-free, gently sweetened, calming</p>
+          <div class="price">Rs 160</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-panel" data-panel="bakes">
+      <div class="dish-grid">
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=500&q=80" alt="Butter croissant"></div>
+          <h3>Butter Croissant</h3>
+          <p>Laminated fresh each morning, 48-hour proof</p>
+          <div class="price">Rs 180</div>
+        </div>
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=500&q=80" alt="Cardamom bun"></div>
+          <h3>Cardamom Bun</h3>
+          <p>A Chaptr original — soft, spiced, glazed</p>
+          <div class="price">Rs 160</div>
+        </div>
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=500&q=80" alt="Chocolate babka"></div>
+          <h3>Dark Chocolate Babka</h3>
+          <p>Rich, swirled, slightly sea-salted</p>
+          <div class="price">Rs 220</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-panel" data-panel="plates">
+      <div class="dish-grid">
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=500&q=80" alt="Avocado toast"></div>
+          <h3>Avocado on Sourdough</h3>
+          <p>Chilli oil, feta, soft egg, house sourdough</p>
+          <div class="price">Rs 380</div>
+        </div>
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=500&q=80" alt="Roasted vegetable bowl"></div>
+          <h3>Roasted Veg Grain Bowl</h3>
+          <p>Seasonal vegetables, quinoa, tahini dressing</p>
+          <div class="price">Rs 360</div>
+        </div>
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=500&q=80" alt="Momo dumplings"></div>
+          <h3>Momo, Chaptr Style</h3>
+          <p>Steamed dumplings, house sesame-chilli sauce</p>
+          <div class="price">Rs 300</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-panel" data-panel="cold">
+      <div class="dish-grid">
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1517959105821-eaf2591984ca?auto=format&fit=crop&w=500&q=80" alt="Cold brew"></div>
+          <h3>Cold Brew, Straight Up</h3>
+          <p>Steeped 18 hours, served over ice</p>
+          <div class="price">Rs 240</div>
+        </div>
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1497515114629-f71d768fd07c?auto=format&fit=crop&w=500&q=80" alt="Iced spanish latte"></div>
+          <h3>Iced Spanish Latte</h3>
+          <p>Espresso, condensed milk, cold milk over ice</p>
+          <div class="price">Rs 260</div>
+        </div>
+        <div class="dish">
+          <div class="dish-plate"><img src="https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=500&q=80" alt="Citrus cooler"></div>
+          <h3>Sparkling Citrus Cooler</h3>
+          <p>Fresh lime, orange, soda, mint</p>
+          <div class="price">Rs 210</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="delivery section-pad" id="delivery">
+  <div class="container">
+    <div class="delivery-grid">
+      <div class="delivery-copy reveal">
+        <p class="kicker">Can't Make It In?</p>
+        <h2>Chaptr 1, delivered to your door</h2>
+        <p>Everything on our menu — the pour-overs, the cardamom buns, the momo — packed carefully and sent straight to you, anywhere in Janakpurdham.</p>
+        <div class="delivery-badge"><span class="dot"></span> Online delivery available now</div>
+
+        <div class="delivery-apps">
+          <div class="delivery-app-row">
+            <div class="delivery-app-icon" style="background:#8dd3bb;">P</div>
+            <div class="delivery-app-info">
+              <div class="delivery-app-name">Order on Pathao Food</div>
+              <div class="delivery-app-meta">Live tracking · 30–40 min avg delivery</div>
+            </div>
+            <a href="#" class="delivery-app-cta">Order Now</a>
+          </div>
+          <div class="delivery-app-row">
+            <div class="delivery-app-icon" style="background:#25D366;">W</div>
+            <div class="delivery-app-info">
+              <div class="delivery-app-name">Order via WhatsApp</div>
+              <div class="delivery-app-meta">Message us your order directly</div>
+            </div>
+            <a href="#" class="delivery-app-cta">Chat Now</a>
+          </div>
+          <div class="delivery-app-row">
+            <div class="delivery-app-icon" style="background:var(--ink);">C</div>
+            <div class="delivery-app-info">
+              <div class="delivery-app-name">Call to Order</div>
+              <div class="delivery-app-meta">+977 41-XXXXXX · 7 AM – 9 PM</div>
+            </div>
+            <a href="tel:+97741000000" class="delivery-app-cta">Call</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="delivery-visual reveal reveal-delay-1">
+        <div class="frame">
+          <img src="https://images.unsplash.com/photo-1526367790999-0150786686a2?auto=format&fit=crop&w=800&q=80" alt="Packaged takeaway order from Chaptr 1">
+        </div>
+        <div class="delivery-float">
+          <div class="clock">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
+          </div>
+          <div>
+            <div class="label">Avg. delivery time</div>
+            <div class="value">30–40 minutes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ambience section-pad" id="ambience">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="kicker">The Setting</p>
+      <h2>A room built for lingering</h2>
+      <p>Warm wood, low light, and corners for every kind of visit.</p>
+    </div>
+    <div class="amb-grid reveal reveal-delay-1">
+      <figure class="amb-card">
+        <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=700&q=80" alt="Main seating area">
+        <figcaption>The main room</figcaption>
+      </figure>
+      <figure class="amb-card">
+        <img src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=700&q=80" alt="Window seating">
+        <figcaption>Window seats</figcaption>
+      </figure>
+      <figure class="amb-card">
+        <img src="https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=700&q=80" alt="Barista at counter">
+        <figcaption>The counter</figcaption>
+      </figure>
+      <figure class="amb-card">
+        <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=700&q=80" alt="Cafe corner">
+        <figcaption>A quiet corner</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials section-pad" id="stories">
+  <div class="container">
+    <div class="test-grid">
+      <div class="test-image reveal">
+        <img src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=700&q=80" alt="Guests enjoying Chaptr 1">
+      </div>
+      <div class="reveal reveal-delay-1">
+        <p class="kicker">Let's see what others say</p>
+        <h2>Stories from our regulars</h2>
+        <p class="test-quote">"Chaptr 1 has become our Sunday ritual. The cardamom bun alone is worth the walk across town — and somehow, no one ever rushes you out."</p>
+        <div class="test-avatars">
+          <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=100&q=80" alt="">
+          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80" alt="">
+          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" alt="">
+        </div>
+        <p class="test-name"><strong>Rima Thakur</strong> — regular since opening week</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reviews section-pad" id="reviews">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="reviews-head">
+        <svg class="google-g" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
+        <p class="kicker" style="margin-bottom:0;">Google Reviews</p>
+      </div>
+      <h2>What Janakpur is saying</h2>
+      <div class="reviews-sub">
+        <span class="stars">★★★★★</span>
+        <span>4.9 out of 5 — based on reviews</span>
+      </div>
+      <span class="demo-tag">Sample reviews for demo — will be replaced with live Google Reviews at launch</span>
+    </div>
+
+    <div class="marquee-wrap reveal reveal-delay-1">
+      <div class="marquee-track" id="marqueeTrack">
+        <div class="review-card">
+          <div class="review-top">
+            <img class="review-avatar" src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=100&q=80" alt="">
+            <div><div class="review-name">Anjali Karn</div><div class="review-when">2 weeks ago</div></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">Best coffee in Janakpur, hands down. The cardamom bun is unreal and the seating upstairs is so peaceful.</p>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <img class="review-avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" alt="">
+            <div><div class="review-name">Suresh Yadav</div><div class="review-when">1 month ago</div></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">Finally a proper coffeehouse here. Been coming every weekend since it opened — the pour-over is worth the visit alone.</p>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <img class="review-avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80" alt="">
+            <div><div class="review-name">Priya Mishra</div><div class="review-when">3 weeks ago</div></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">Loved the ambience — quiet, warm lighting, great for working through the afternoon. Staff is genuinely kind too.</p>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <img class="review-avatar" src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=100&q=80" alt="">
+            <div><div class="review-name">Bikash Thapa</div><div class="review-when">5 days ago</div></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">The momo here surprised me — did not expect a coffeehouse to nail this so well. Will be back with friends.</p>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <img class="review-avatar" src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=100&q=80" alt="">
+            <div><div class="review-name">Sneha Jha</div><div class="review-when">1 week ago</div></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">A proper third place for Janakpur. My laptop and I have basically moved in on Sunday mornings.</p>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <img class="review-avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" alt="">
+            <div><div class="review-name">Rohit Chaudhary</div><div class="review-when">2 months ago</div></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">The cold brew is stronger and smoother than anything else I've had in the city. Great find near the station.</p>
+        </div>
+        <!-- duplicate set for seamless loop -->
+        <div class="review-card">
+          <div class="review-top">
+            <img class="review-avatar" src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=100&q=80" alt="">
+            <div><div class="review-name">Anjali Karn</div><div class="review-when">2 weeks ago</div></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">Best coffee in Janakpur, hands down. The cardamom bun is unreal and the seating upstairs is so peaceful.</p>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <img class="review-avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" alt="">
+            <div><div class="review-name">Suresh Yadav</div><div class="review-when">1 month ago</div></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">Finally a proper coffeehouse here. Been coming every weekend since it opened — the pour-over is worth the visit alone.</p>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <img class="review-avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80" alt="">
+            <div><div class="review-name">Priya Mishra</div><div class="review-when">3 weeks ago</div></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">Loved the ambience — quiet, warm lighting, great for working through the afternoon. Staff is genuinely kind too.</p>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <img class="review-avatar" src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=100&q=80" alt="">
+            <div><div class="review-name">Bikash Thapa</div><div class="review-when">5 days ago</div></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">The momo here surprised me — did not expect a coffeehouse to nail this so well. Will be back with friends.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="visit section-pad" id="visit">
+  <div class="container">
+    <p class="kicker reveal">Stay in Touch</p>
+    <h2 class="reveal">New chapters, straight to your inbox</h2>
+    <p class="reveal reveal-delay-1" style="color:var(--ink-soft); max-width:440px; margin:14px auto 0;">Weekly notes on new menu items, seasonal specials, and Chaptr 1 happenings.</p>
+    <form class="visit-form reveal reveal-delay-2" onsubmit="return false;">
+      <input type="email" placeholder="Your email address" aria-label="Email address">
+      <button type="submit">Subscribe</button>
+    </form>
+
+    <div class="visit-details reveal reveal-delay-3">
+      <div class="vd">
+        <div class="vd-label">Address</div>
+        <div class="vd-value">Station Road, Janakpurdham</div>
+      </div>
+      <div class="vd">
+        <div class="vd-label">Hours</div>
+        <div class="vd-value">7 AM – 9 PM, daily</div>
+      </div>
+      <div class="vd">
+        <div class="vd-label">Reach Us</div>
+        <div class="vd-value">+977 41-XXXXXX</div>
+      </div>
+    </div>
+
+    <div class="map-block reveal reveal-delay-3">
+      <div class="map-embed">
+        <iframe
+          src="https://www.google.com/maps?q=Janakpurdham,Nepal&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Map showing Chaptr 1 location in Janakpurdham, Nepal">
+        </iframe>
+      </div>
+      <div class="map-info">
+        <p class="kicker">Get Directions</p>
+        <h3>Come sit with us for a while</h3>
+        <div class="map-row">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          <div><div class="label">Address</div><div class="value">Station Road, Janakpurdham, Madhesh Province</div></div>
+        </div>
+        <div class="map-row">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
+          <div><div class="label">Hours</div><div class="value">Open daily, 7:00 AM – 9:00 PM</div></div>
+        </div>
+        <a href="https://www.google.com/maps/search/?api=1&query=Janakpurdham,Nepal" target="_blank" rel="noopener" class="map-cta">
+          Open in Google Maps →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#top" class="brand">Chaptr <span class="mark">1</span></a>
+        <p>A coffeehouse in Janakpur, built for slow mornings and long conversations.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Get Cooking</h4>
+        <a href="#menu">Full Menu</a>
+        <a href="#">Seasonal Specials</a>
+        <a href="#">Catering</a>
+      </div>
+      <div class="footer-col">
+        <h4>Information</h4>
+        <a href="#">About</a>
+        <a href="#visit">Location &amp; Hours</a>
+        <a href="#">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>Follow Us</h4>
+        <a href="#">Instagram</a>
+        <a href="#">Facebook</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Chaptr 1 Coffeehouse, Janakpur</span>
+      <span>Every cup, its own chapter.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const header = document.getElementById('siteHeader');
+  const rule = document.getElementById('progressRule');
+  const navToggle = document.getElementById('navToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  navToggle.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    navToggle.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', isOpen);
+  });
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+      navToggle.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 40);
+    const h = document.documentElement;
+    const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    rule.style.width = pct + '%';
+  }, { passive:true });
+
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting){
+        entry.target.classList.add('is-visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  revealEls.forEach(el => io.observe(el));
+
+  // Menu tabs
+  const tabs = document.querySelectorAll('.chapter-tab');
+  const panels = document.querySelectorAll('.menu-panel');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+      tabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      const panel = document.querySelector(`.menu-panel[data-panel="${target}"]`);
+      panel.classList.add('active');
+      panel.classList.add('is-visible');
+    });
+  });
+
+  // Hero tabs
+  const heroTabs = document.querySelectorAll('[data-hero-tab]');
+  const heroPanels = document.querySelectorAll('[data-hero-panel]');
+  heroTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.heroTab;
+      heroTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      heroPanels.forEach(p => {
+        p.style.display = (p.dataset.heroPanel === target) ? 'flex' : 'none';
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
